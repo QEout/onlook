@@ -25,6 +25,7 @@
         "backend:start": "bun --filter @onlook/backend start",
         "db:gen": "bun --filter @onlook/db db:gen",
         "db:push": "bun --filter @onlook/db db:push",
+        "db:studio": "bun --filter @onlook/db db:studio",
         "db:seed": "bun --filter @onlook/db db:seed",
         "db:migrate": "bun --filter @onlook/db db:migrate",
         "format": "bun --filter '*' format",
@@ -46,6 +47,5 @@
         "extract-zip": "^2.0.1",
         "husky": "^9.1.6"
     },
-    "dependencies": {},
-    "packageManager": "bun@1.2.13"
+    "dependencies": {}
 }

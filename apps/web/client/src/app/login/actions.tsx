@@ -2,7 +2,7 @@
 
 import { createClient } from '@/utils/supabase/server';
 import { SEED_USER } from '@onlook/db';
-import { SignInMethod } from '@onlook/models';
+import { type SignInMethod } from '@onlook/models';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
@@ -47,7 +47,7 @@ export async function devLogin() {
         redirect('/');
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
         email: SEED_USER.EMAIL,
         password: SEED_USER.PASSWORD,
     });
