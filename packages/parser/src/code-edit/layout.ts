@@ -109,7 +109,10 @@ function getPreloadScript(): T.JSXElement {
         t.jsxOpeningElement(
             t.jsxIdentifier('Script'),
             [
-                t.jsxAttribute(t.jsxIdentifier('src'), t.stringLiteral(PRELOAD_SCRIPT_FILE_NAME)),
+                t.jsxAttribute(
+                    t.jsxIdentifier('src'),
+                    t.stringLiteral(`/${PRELOAD_SCRIPT_FILE_NAME}`),
+                ),
                 t.jsxAttribute(t.jsxIdentifier('strategy'), t.stringLiteral('beforeInteractive')),
                 t.jsxAttribute(t.jsxIdentifier('type'), t.stringLiteral('module')),
                 t.jsxAttribute(t.jsxIdentifier('id'), t.stringLiteral(PRELOAD_SCRIPT_FILE_NAME)),
@@ -153,6 +156,35 @@ function createBodyTag(htmlElement: T.JSXElement): void {
 
 function wrapWithHtmlAndBody(ast: T.File): void {
     traverse(ast, {
+        ArrowFunctionExpression(path) {
+            const { body } = path.node;
+            if (!t.isJSXElement(body) && !t.isJSXFragment(body)) {
+                return;
+            }
+
+            const children: Array<
+                T.JSXElement | T.JSXFragment | T.JSXText | T.JSXExpressionContainer
+            > = [getPreloadScript(), t.jsxText('\n'), body];
+
+            const newBody = t.jsxElement(
+                t.jsxOpeningElement(t.jsxIdentifier('body'), []),
+                t.jsxClosingElement(t.jsxIdentifier('body')),
+                children,
+                false,
+            );
+
+            const html = t.jsxElement(
+                t.jsxOpeningElement(t.jsxIdentifier('html'), [
+                    t.jsxAttribute(t.jsxIdentifier('lang'), t.stringLiteral('en')),
+                ]),
+                t.jsxClosingElement(t.jsxIdentifier('html')),
+                [newBody],
+                false,
+            );
+
+            path.node.body = t.blockStatement([t.returnStatement(html)]);
+            path.stop();
+        },
         ReturnStatement(path) {
             const arg = path.node.argument;
             if (!arg) return;
